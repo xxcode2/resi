@@ -16,13 +16,19 @@ node scripts/gen-licenses.mjs 100
 node scripts/gen-licenses.mjs --from kode.txt
 ```
 
-Output berupa dua bagian:
-1. **Daftar kode** (mis. `RESI-PK4K-NDNJ`) — otomatis disimpan ke `licenses/kode-<tanggal>.txt` (format `<kode>  <hash>`) supaya tidak hilang saat terminal ditutup. Folder `licenses/` sudah di-`gitignore` (tidak ikut ke-deploy). Bagikan **satu baris kode** (kolom kiri) ke **satu pembeli**; kolom hash cuma arsip, jangan diberikan.
-2. **Array `LICENSE_HASHES`** — tempel menggantikan isi array di `src/constants/licenses.js`, lalu deploy ulang.
+Output berupa dua file di folder `licenses/` (sudah di-`gitignore`, tidak ikut ke-deploy):
+1. **`kode-<tanggal>.txt`** — daftar kode asli, format `<kode>  <hash>`. Bagikan **kolom kode** (kiri) ke **satu pembeli**; kolom hash cuma arsip, jangan diberikan. Buka file ini di Notepad untuk catatan penjualan.
+2. **`hashes-<tanggal>.js`** — array `LICENSE_HASHES` siap pakai. Salin **seluruh isinya** menggantikan array lama di `src/constants/licenses.js` (jangan cuma menambah baris — kalau tidak dihapus, kode yang sudah dicabut tetap aktif), lalu deploy ulang.
+
+Tambahkan `--print` di akhir command kalau mau daftar lengkapnya juga tercetak ke terminal (tidak perlu untuk jumlah besar).
 
 Kode yang sudah benar disimpan di localStorage browser pembeli, jadi cukup memasukkan kode sekali. Untuk **mencabut** akses seseorang: regenerate daftar hash tanpa kode orang tersebut, deploy ulang — tiket tersimpan di perangkatnya otomatis tidak berlaku lagi.
 
 > ⚠️ Catatan keamanan: tanpa backend, verifikasi client-side bisa dilewati oleh pengguna lanjutan (mis. memanggil fungsi hash manual dari konsol). Daftar kode juga tidak ikut ter-bundle — hanya hash-nya, jadi kode milik pembeli lain tidak bisa dibaca dari source. Untuk proteksi lebih ketat, perlu verifikasi server-side.
+
+> ℹ️ Biaya bundel: tiap 1000 kode menambah ± 64 KB source hash (± 38 KB setelah gzip) ke file aplikasi. 1000 kode masih wajar; kalau nanti sampai 5.000+, pertimbangkan memisahkan daftar hash ke file terpisah yang dimuat saat aplikasi jalan (lazy load).
+
+Teks halaman produk (judul, deskripsi, FAQ, kata kunci) untuk Shopee/Tokopedia/TikTok sudah disiapkan di `DESKRIPSI-PRODUK.md` — tinggal ganti harga dan nomor kontak.
 
 ## 1. Persyaratan
 

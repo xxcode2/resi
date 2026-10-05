@@ -4,8 +4,10 @@
  *
  * Pemakaian:
  *   node scripts/gen-licenses.mjs 100
- *     -> buat 100 kode acak baru (format RESI-XXXX-XXXX), cetak daftar
- *        kode untuk dibagikan + array hash siap tempel ke licenses.js
+ *     -> buat 100 kode acak baru (format RESI-XXXX-XXXX). Hasil:
+ *        licenses/kode-<tanggal>.txt   = daftar kode (privat, buat catatan Anda)
+ *        licenses/hashes-<tanggal>.js  = array LICENSE_HASHES (tempel ke licenses.js)
+ *        Tambah --print kalau mau semuanya ikut tercetak ke terminal.
  *
  *   node scripts/gen-licenses.mjs --from kode.txt
  *     -> hash daftar kode yang sudah Anda tulis sendiri (satu per baris)
@@ -89,15 +91,33 @@ const body = [
 ].join("\n");
 writeFileSync(outFile, body, "utf8");
 
-// 1) Daftar kode — juga tercetak biar gampang di-copy
-console.log("=== DAFTAR KODE (bagikan 1 kode ke 1 pembeli, JANGAN disebar) ===");
-for (const { code } of entries) console.log(code);
+// 2) Array hash juga ditulis ke file, biar tidak perlu copy-paste dari terminal
+//    (jumlah ribu kode bikin output stdout tidak terbaca).
+const hashFile = join(process.cwd(), "licenses", `hashes-${stamp}.js`);
+writeFileSync(
+  hashFile,
+  ["// Salin isi array ini ke src/constants/licenses.js lalu deploy.", "export const LICENSE_HASHES = [",
+    ...entries.map(({ hash }) => `  "${hash}",`),
+    "];", ""].join("\n"),
+  "utf8"
+);
 
-// 2) Array hash — tempel ke LICENSE_HASHES di src/constants/licenses.js
-console.log("\n=== LICENSE_HASHES (tempel ke src/constants/licenses.js) ===");
-console.log("export const LICENSE_HASHES = [");
-for (const { hash } of entries) console.log(`  "${hash}",`);
-console.log("];");
+// 3) Ringkasan singkat di terminal — daftar lengkap ada di file. Pakai --print
+//    kalau memang mau mencetak semuanya ke stdout.
+if (process.argv.includes("--print")) {
+  console.log("=== DAFTAR KODE (bagikan 1 kode ke 1 pembeli, JANGAN disebar) ===");
+  for (const { code } of entries) console.log(code);
+  console.log("\n=== LICENSE_HASHES (sudah disimpan di hashes-<tanggal>.js) ===");
+  console.log("export const LICENSE_HASHES = [");
+  for (const { hash } of entries) console.log(`  "${hash}",`);
+  console.log("];");
+} else {
+  console.log(`✓ ${entries.length} kode dibuat.`);
+  console.log("  5 kode pertama:");
+  for (const { code } of entries.slice(0, 5)) console.log(`    ${code}`);
+  console.log("  (tambah --print di akhir command kalau mau cetak semuanya ke terminal)");
+}
 
-console.log(`\n✓ Daftar kode ASLI tersimpan aman di: ${outFile}`);
+console.log(`\n✓ KODE ASLI (buat notepad Anda):        ${outFile}`);
+console.log(`✓ ARRAY HASH siap tempel:              ${hashFile}`);
 console.log("  (folder licenses/ sudah di-gitignore, tidak akan ke-deploy ke Vercel)");
