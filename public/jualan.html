@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XYZ Thermal — Jualan / Demo Produk (Siap Screenshot)</title>
+<meta name="robots" content="noindex" />
+<!-- FONT: sama persis dengan yang dipakai aplikasi, supaya hasil screenshot
+     tidak terasa "beda produk" saat dilihat calon pembeli -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap" rel="stylesheet" />
+<style>
+  /* ── Palet & tipografi mengikuti desain aplikasi aslinya ───────────── */
+  :root {
+    --paper: #f4f2ec;
+    --paper-2: #ffffff;
+    --ink: #1b1f23;
+    --ink-2: #454b52;
+    --muted: #9aa3ac;
+    --signal: #e1552f;
+    --green: #1f6f5c;
+    --line: rgba(27, 31, 35, 0.12);
+    --shadow: 0 8px 24px rgba(27, 31, 35, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #e9e6de;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; }
+  h1, h2, h3 { font-family: "General Sans", Inter, system-ui, sans-serif; }
+
+  /* ── Bar panduan (tidak ikut terscreenshot saat disembunyikan) ────── */
+  .helper {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--ink); color: #fff;
+    padding: 14px 20px; display: flex; gap: 14px; align-items: center;
+    flex-wrap: wrap; font-size: 13px;
+  }
+  .helper b { color: #ffb59f; }
+  .helper button {
+    margin-left: auto; background: var(--signal); color: #fff; border: 0;
+    padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;
+  }
+  body.hidden-helper .helper { display: none; }
+  /* tombol mungil untuk memunculkan kembali panduan setelah disembunyikan
+     (kalau tidak ada, tombol hide berada di dalam bar yang ikut hilang) */
+  .restore {
+    position: fixed; right: 14px; bottom: 14px; z-index: 60; display: none;
+    background: var(--ink); color: #fff; border: 0; border-radius: 999px;
+    padding: 10px 16px; font-size: 12px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(27,31,35,.28);
+  }
+  body.hidden-helper .restore { display: block; }
+
+  /* ── Deck: tiap .slide = 1 gambar untuk online shop (rasio 1:1) ───── */
+  /* Semua ukuran isi slide memakai satuan cqw (persen lebar slide) supaya
+     komposisi tetap sama persis saat discreenshot di layar besar maupun di
+     HP — tidak ada lagi teks yang terpotong keluar kotak. Nilai px di depan
+     tetap dibiarkan sebagai fallback untuk browser tanpa container query. */
+  .deck { max-width: 920px; margin: 0 auto; padding: 28px 16px 80px; }
+  .slide {
+    position: relative; overflow: hidden;
+    container-type: inline-size;
+    aspect-ratio: 1 / 1;                 /* kuadrat → cocok Shopee/Tokopedia */
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 54px 52px; padding: 6.1cqw 5.9cqw;
+    display: flex; flex-direction: column; justify-content: center;
+    margin-bottom: 28px;
+  }
+  .slide.dark { background: var(--ink); color: #f4f2ec; border-color: #000; }
+  .slide.accent { background: linear-gradient(135deg, #e1552f 0%, #c33f1d 100%); color: #fff; border-color: transparent; }
+
+  .num {
+    position: absolute; top: 22px; right: 26px; top: 2.5cqw; right: 2.9cqw;
+    font-size: 12px; font-size: 1.35cqw; font-weight: 700; letter-spacing: .14em;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .dark .num, .accent .num { color: rgba(255,255,255,.55); }
+
+  .brandmark {
+    position: absolute; bottom: 22px; left: 52px; bottom: 2.5cqw; left: 5.9cqw;
+    display: flex; align-items: center; gap: 9px; gap: 1cqw;
+    font-size: 13px; font-size: 1.46cqw; font-weight: 700; letter-spacing: .02em; color: var(--ink-2);
+  }
+  .dark .brandmark { color: rgba(244,242,236,.7); }
+  .accent .brandmark { color: rgba(255,255,255,.85); }
+  .brandmark svg { width: 26px; height: 26px; width: 2.9cqw; height: 2.9cqw; }
+
+  .eyebrow { font-size: 13px; font-size: 1.46cqw; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--signal); }
+  .dark .eyebrow, .accent .eyebrow { color: #ffb59f; }
+  h1 { font-size: 52px; font-size: 5.86cqw; line-height: 1.05; letter-spacing: -0.02em; font-weight: 700; }
+  h2 { font-size: 36px; font-size: 4.05cqw; line-height: 1.15; letter-spacing: -0.015em; font-weight: 700; }
+  h3 { font-size: 17px; font-size: 1.91cqw; font-weight: 700; }
+  p.lead { font-size: 18px; font-size: 2.03cqw; line-height: 1.55; color: var(--ink-2); max-width: 30em; }
+  .dark p.lead { color: rgba(244,242,236,.75); }
+  .accent p.lead { color: rgba(255,255,255,.9); }
+  .grow { flex: 1; }
+  .center-y { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; gap: .9cqw;
+    background: #fff; border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 16px; padding: 1cqw 1.8cqw;
+    font-size: 13px; font-size: 1.46cqw; font-weight: 600; color: var(--ink);
+    box-shadow: var(--shadow);
+  }
+  .dark .badge, .accent .badge { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.25); box-shadow: none; }
+  .badge .dot { width: 8px; height: 8px; width: .9cqw; height: .9cqw; border-radius: 50%; background: var(--green); }
+
+  .grid { display: grid; gap: 14px; gap: 1.6cqw; }
+  .grid.c2 { grid-template-columns: 1fr 1fr; }
+  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
+
+  .card {
+    background: var(--paper-2); border: 1px solid var(--line);
+    border-radius: 14px; border-radius: 1.6cqw; padding: 18px; padding: 2cqw;
+  }
+  .dark .card { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); }
+  .card .ico {
+    width: 34px; height: 34px; width: 3.8cqw; height: 3.8cqw;
+    border-radius: 9px; border-radius: 1cqw; display: grid; place-items: center;
+    background: rgba(225, 85, 47, .12); color: var(--signal); margin-bottom: 10px; margin-bottom: 1.1cqw;
+    font-size: 16px; font-size: 1.8cqw;
+  }
+  .dark .card .ico, .accent .card .ico { background: rgba(255,255,255,.16); color: #fff; }
+  .card p { font-size: 13.5px; font-size: 1.52cqw; line-height: 1.5; color: var(--ink-2); margin-top: 4px; margin-top: .45cqw; }
+  .dark .card p { color: rgba(244,242,236,.7); }
+
+  ul.ticks { list-style: none; display: grid; gap: 12px; gap: 1.35cqw; }
+  ul.ticks li { display: flex; gap: 11px; gap: 1.24cqw; font-size: 16px; font-size: 1.8cqw; line-height: 1.45; }
+  ul.ticks li::before {
+    content: "✓"; flex: 0 0 22px; flex: 0 0 2.5cqw; height: 22px; height: 2.5cqw; border-radius: 50%;
+    background: var(--green); color: #fff; font-size: 13px; font-size: 1.46cqw; font-weight: 700;
+    display: grid; place-items: center; margin-top: 1px;
+  }
+  .accent ul.ticks li::before { background: #fff; color: var(--signal); }
+
+  /* langkah 1-2-3 */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; gap: 1.8cqw; }
+  .step .n {
+    width: 34px; height: 34px; width: 3.8cqw; height: 3.8cqw;
+    border-radius: 10px; border-radius: 1.1cqw; background: var(--signal); color: #fff;
+    font-size: 15px; font-size: 1.8cqw; font-weight: 700; display: grid; place-items: center;
+    margin-bottom: 12px; margin-bottom: 1.35cqw;
+  }
+  .step h3 { font-size: 16px; font-size: 1.8cqw; }
+  .step p { font-size: 13.5px; font-size: 1.52cqw; color: var(--ink-2); line-height: 1.5; margin-top: 6px; margin-top: .68cqw; }
+
+  /* ── Mock UI aplikasi (untuk "screenshot produk") ─────────────────── */
+  .browser {
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; border-radius: 1.35cqw;
+    overflow: hidden; box-shadow: 0 18px 40px rgba(27,31,35,.16);
+  }
+  .browser .bar { display: flex; align-items: center; gap: 6px; gap: .68cqw; background: #f1efe9; padding: 9px 12px; padding: 1cqw 1.35cqw; border-bottom: 1px solid var(--line); }
+  .browser .bar i { width: 9px; height: 9px; width: 1cqw; height: 1cqw; border-radius: 50%; background: #d5d0c6; display: block; }
+  .browser .bar .url {
+    margin-left: 8px; margin-left: .9cqw; flex: 1; background: #fff; border: 1px solid var(--line);
+    border-radius: 6px; border-radius: .68cqw; font-size: 11px; font-size: 1.24cqw; color: var(--muted); padding: 3px 10px; padding: .34cqw 1.13cqw;
+  }
+  /* Kolom kiri/tengah/kanan distribute penuh tinggi mock, supaya tidak ada
+     ruang kosong menganga di bawah panel saat slide dilebarkan */
+  .app .col { display: flex; flex-direction: column; justify-content: space-between; }
+  .app { display: grid; grid-template-columns: 150px 1fr 118px; grid-template-columns: 17cqw 1fr 13.3cqw; gap: 10px; gap: 1.13cqw; padding: 12px; padding: 1.35cqw; background: var(--paper); min-height: 320px; min-height: 60cqw; }
+  .app .panel { background: #fff; border: 1px solid var(--line); border-radius: 9px; border-radius: 1cqw; padding: 10px; padding: 1.13cqw; }
+  .app .ttl { font-size: 10px; font-size: 1.13cqw; font-weight: 700; color: var(--ink); margin-bottom: 7px; margin-bottom: .8cqw; }
+  .app .row { height: 7px; height: .8cqw; border-radius: 4px; border-radius: .45cqw; background: #e7e4dc; margin-bottom: 6px; margin-bottom: .68cqw; }
+  .app .row.s { width: 60%; }
+  .app .field { border: 1px solid var(--line); border-radius: 6px; border-radius: .68cqw; padding: 5px 7px; padding: .56cqw .8cqw; font-size: 9px; font-size: 1cqw; color: var(--muted); margin-bottom: 6px; margin-bottom: .68cqw; background: #fbfaf7; }
+  .app .btn { background: var(--signal); color: #fff; border-radius: 7px; border-radius: .8cqw; font-size: 9.5px; font-size: 1.07cqw; font-weight: 700; text-align: center; padding: 7px 0; padding: .8cqw 0; }
+  .app .btn.line { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .app .chip { display: inline-block; font-size: 8.5px; font-size: .96cqw; padding: 2.5px 7px; padding: .28cqw .8cqw; border-radius: 99px; border: 1px solid var(--line); margin: 0 3px 4px 0; margin: 0 .34cqw .45cqw 0; color: var(--ink-2); }
+  .app .chip.on { background: rgba(225,85,47,.1); border-color: var(--signal); color: var(--signal); font-weight: 700; }
+  .app .live { width: 7px; height: 7px; width: .8cqw; height: .8cqw; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 4px; margin-right: .45cqw; }
+  .app .drop { border: 1px dashed var(--line); border-radius: 7px; border-radius: .8cqw; padding: 14px 6px; padding: 1.6cqw .7cqw; text-align: center; font-size: 9px; font-size: 1cqw; color: var(--muted); }
+
+  /* ── Mock struk thermal ──────────────────────────────────────────── */
+  .paper-strip {
+    background: #fff; border-left: 1px dashed #cfc9bd; border-right: 1px dashed #cfc9bd;
+    color: var(--ink); padding: 16px 14px 10px; padding: 1.8cqw 1.6cqw 1.1cqw; font-size: 11.5px; font-size: 1.3cqw; line-height: 1.5;
+    box-shadow: 0 10px 26px rgba(27,31,35,.14); border-radius: 3px;
+  }
+  .paper-strip .top { text-align: center; font-weight: 700; letter-spacing: .04em; }
+  .paper-strip .dash { border-top: 1px dashed #bdb6a9; margin: 8px 0; margin: .9cqw 0; }
+  .paper-strip .kv { display: flex; }
+  .paper-strip .kv b { min-width: 74px; min-width: 8.3cqw; font-weight: 700; }
+  .paper-strip .big { font-size: 15px; font-size: 1.7cqw; font-weight: 700; letter-spacing: .02em; }
+  .paper-strip table { width: 100%; border-collapse: collapse; font-size: 11px; font-size: 1.24cqw; }
+  .paper-strip th { text-align: left; font-size: 9.5px; font-size: 1.07cqw; letter-spacing: .06em; padding-bottom: 3px; padding-bottom: .34cqw; }
+  .paper-strip th.r, .paper-strip td.r { text-align: right; }
+  .paper-strip td { padding: 1.5px 0; padding: .17cqw 0; vertical-align: top; }
+  .paper-strip .tot { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; font-size: 1.46cqw; }
+  .paper-strip .foot { text-align: center; font-size: 9px; font-size: 1cqw; color: var(--muted); }
+  .cutline { border-top: 2px dashed var(--muted); margin: 0 0 6px; margin: 0 0 .7cqw; position: relative; }
+  .cutline span { position: absolute; right: 0; top: -8px; top: -.9cqw; font-size: 9px; font-size: 1cqw; color: var(--muted); background: var(--paper); padding: 0 5px; padding: 0 .56cqw; }
+
+  .compare { width: 100%; border-collapse: collapse; font-size: 14px; font-size: 1.5cqw; }
+  .compare th, .compare td { text-align: left; padding: 10px 12px; padding: 1cqw 1.35cqw; border-bottom: 1px solid var(--line); }
+  .compare th { font-size: 12px; font-size: 1.35cqw; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .compare td.ok { color: var(--green); font-weight: 700; }
+  .compare td.no { color: var(--muted); }
+  .dark .compare th { color: rgba(244,242,236,.5); }
+  .dark .compare td { border-color: rgba(255,255,255,.12); }
+
+  .brands { display: flex; flex-wrap: wrap; gap: 8px; gap: .9cqw; }
+  .brands span { background: #fff; border: 1px solid var(--line); border-radius: 8px; border-radius: .9cqw; padding: 7px 13px; padding: .8cqw 1.46cqw; font-size: 13px; font-size: 1.46cqw; font-weight: 600; }
+  .dark .brands span { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); color: #fff; }
+
+  .foot-note { font-size: 12px; font-size: 1.35cqw; color: var(--muted); margin-top: 10px; margin-top: 1.13cqw; }
+</style>
+</head>
+<body>
+
+<!-- panduan pakai; klik "Sembunyikan" sebelum screenshot -->
+<div class="helper">
+  <b>PANDUAN (tidak ikut ter-screenshot):</b>
+  tiap kotak = 1 gambar rasio 1:1 siap unggah Shopee / Tokopedia / TikTok.
+  Screenshot per slide, atau klik tombol di kanan lalu screenshot penuh dari atas.
+  <button onclick="document.body.classList.add('hidden-helper')">Sembunyikan Panduan</button>
+</div>
+<button class="restore" onclick="document.body.classList.remove('hidden-helper')">Tampilkan Panduan</button>
+
+<div class="deck">
+
+  <!-- ═══ SLIDE 1 · HERO ═══ -->
+  <section class="slide">
+    <div class="num">01 · Hero</div>
+    <div class="center-y">
+      <div style="display:flex;align-items:center;gap:1.8cqw;margin-bottom:2.5cqw">
+        <svg viewBox="0 0 32 32" style="width:7.2cqw;height:7.2cqw">
+          <rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/>
+          <rect x="8" y="7" width="16" height="7" rx="1.5" fill="#FBFAF7"/>
+          <rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/>
+          <rect x="10" y="16" width="12" height="1.6" rx=".8" fill="#1B1F23"/>
+          <rect x="10" y="19" width="8" height="1.6" rx=".8" fill="#9AA3AC"/>
+          <circle cx="22" cy="15.5" r="1.2" fill="#1F6F5C"/>
+        </svg>
+        <div>
+          <div style="font-size:2.48cqw;font-weight:700;letter-spacing:-.01em">XYZ Thermal</div>
+          <div style="font-size:1.46cqw;color:var(--muted);font-weight:600">Aplikasi Cetak Resi Bluetooth</div>
+        </div>
+      </div>
+      <h1>Cetak resi marketplace<br />langsung dari HP.</h1>
+      <p class="lead" style="margin-top:2cqw">
+        Unggah PDF resi dari Shopee, Tokopedia, TikTok Shop, Lazada — atau ketik manual
+        kalau tidak ada file-nya. Terhubung ke semua printer thermal Bluetooth.
+        Tanpa install aplikasi, tanpa laptop.
+      </p>
+      <div style="display:flex;gap:1.13cqw;flex-wrap:wrap;margin-top:2.9cqw">
+        <span class="badge"><span class="dot"></span>Semua merek printer thermal</span>
+        <span class="badge"><span class="dot"></span>Bisa 58mm &amp; 80mm</span>
+        <span class="badge"><span class="dot"></span>Jalan offline (PWA)</span>
+      </div>
+    </div>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="8" y="7" width="16" height="7" rx="1.5" fill="#FBFAF7"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 2 · MASALAH → SOLUSI ═══ -->
+  <section class="slide dark">
+    <div class="num">02 · Masalah</div>
+    <div class="center-y">
+      <div class="eyebrow">Kenapa seller butuh ini</div>
+      <h2 style="margin:1.35cqw 0 2.7cqw">Resi dari HP malah ribet?</h2>
+      <div class="grid c2">
+        <div class="card">
+          <div class="ico">✕</div>
+          <h3>Tanpa aplikasi ini</h3>
+          <p>Harus buka laptop, install driver, resi tidak bisa dicetak dari HP, ukuran kertas pas-pasan, dan reprint pesanan jadi kerjaan 10 menit per resi.</p>
+        </div>
+        <div class="card">
+          <div class="ico" style="background:rgba(31,111,92,.25);color:#7fe3c4">✓</div>
+          <h3>Dengan XYZ Thermal</h3>
+          <p>Buka link → hubungkan printer → cetak. 15 detik per resi, dari HP mana pun, semua merek printer, tinggal gunting tiap resi sudah ada jaraknya.</p>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:2.9cqw;font-size:1.8cqw">
+        Cocok untuk seller rumahan, dropshipper, toko fashion, F&amp;B, dan jasa print.
+      </p>
+    </div>
+    <div class="brandmark">XYZ Thermal</div>
+  </section>
+
+  <!-- ═══ SLIDE 3 · FITUR ═══ -->
+  <section class="slide">
+    <div class="num">03 · Fitur</div>
+    <div class="eyebrow">Fitur utama</div>
+    <h2 style="margin:1.13cqw 0 2.5cqw">Semua yang dibutuhkan utk<br />cetak resi harian</h2>
+    <div class="grid c3">
+      <div class="card"><div class="ico">📄</div><h3>Unggah PDF / Gambar</h3><p>Resi dari marketplace langsung terbaca &amp; dikonversi ke format thermal.</p></div>
+      <div class="card"><div class="ico">✏️</div><h3>Input Manual</h3><p>Tanpa file? Ketik nama, alamat, produk — layout label kargo jadi otomatis.</p></div>
+      <div class="card"><div class="ico">🗂️</div><h3>Cetak Semua Halaman</h3><p>PDF berisi banyak resi tercetak berurutan, bisa pilih range halaman.</p></div>
+      <div class="card"><div class="ico">📶</div><h3>Semua Printer BLE</h3><p>Xprinter, Goojprt, Zjiang, HPRT, Phomemo, Rongta, dll — auto-deteksi.</p></div>
+      <div class="card"><div class="ico">✂️</div><h3>Ruang Gunting</h3><p>Jeda kosong otomatis di bawah tiap resi biar gampang dipotong per pesanan.</p></div>
+      <div class="card"><div class="ico">📱</div><h3>Install Seperti Aplikasi</h3><p>PWA: tambahkan ke layar utama, tetap jalan saat koneksi putus.</p></div>
+    </div>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 4 · CARA PAKAI ═══ -->
+  <section class="slide">
+    <div class="num">04 · Cara Pakai</div>
+    <div class="eyebrow">Cara pakai</div>
+    <h2 style="margin:1.13cqw 0 .9cqw">Cuma 3 langkah, 15 detik</h2>
+    <p class="lead" style="font-size:1.7cqw">Tidak perlu paham printer atau driver apapun.</p>
+    <div class="steps" style="margin-top:2.5cqw">
+      <div class="step">
+        <div class="n">1</div><h3>Hubungkan printer</h3>
+        <p>Nyalakan printer thermal Bluetooth, klik <b>Hubungkan Printer</b>, pilih nama printer di dialog browser. Besok-besok tersambung sendiri.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div><h3>Masukkan resi</h3>
+        <p>Unggah file PDF resi dari aplikasi marketplace, atau buka tab <b>Input Manual</b> dan isi data pesanan.</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div><h3>Print</h3>
+        <p>Pilih lebar kertas (58/72/80mm), tentukan rangkap &amp; ruang gunting, klik <b>Print</b>. Resi keluar, tinggal tempel.</p>
+      </div>
+    </div>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 5 · SCREENSHOT PRODUK (mock UI) ═══ -->
+  <section class="slide">
+    <div class="num">05 · Tampilan</div>
+    <div class="eyebrow" style="margin-bottom:1.6cqw">Tampilan aplikasi</div>
+    <div class="browser">
+      <div class="bar"><i></i><i></i><i></i><div class="url mono">xyzthermal.vercel.app</div></div>
+      <div class="app">
+        <div class="col">
+          <div class="panel">
+            <div class="ttl"><span class="live"></span>Printer Terhubung</div>
+            <div style="font-size:1cqw;color:var(--muted);margin-bottom:.9cqw">Xprinter-XP-P205B</div>
+            <div class="btn line">Putuskan</div>
+          </div>
+          <div class="panel" style="margin-top:1.13cqw">
+            <div class="ttl">Sumber Resi</div>
+            <div class="chip on">Unggah File</div><div class="chip">Input Manual</div>
+            <div class="drop" style="color:var(--muted)">📄<br />resi-shopee.pdf</div>
+          </div>
+          <div class="panel" style="margin-top:1.13cqw">
+            <div class="ttl">Cetak</div>
+            <div class="row s"></div>
+            <div class="btn">🖨 Print</div>
+          </div>
+        </div>
+        <div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f7f5f0">
+          <div class="paper-strip" style="width:19.1cqw;box-shadow:none;border:1px solid var(--line)">
+            <div class="top">TOKO SAYANG</div>
+            <div class="dash"></div>
+            <div class="big mono" style="text-align:center">JNT · 92310012345</div>
+            <div class="dash"></div>
+            <div class="kv"><b>Tujuan</b><span>BUDI SANJAYA</span></div>
+            <div class="kv"><b>Alamat</b><span>Jl. Melati No. 12, Bandung</span></div>
+            <div class="dash"></div>
+            <div class="tot"><span>TOTAL</span><span>Rp35.000</span></div>
+            <div class="dash"></div>
+            <div class="foot">Dicetak 15:04 · XYZ Thermal</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="panel">
+            <div class="ttl">Lebar Kertas</div>
+            <div class="chip">58mm</div><div class="chip on">72mm</div><div class="chip">80mm</div>
+          </div>
+          <div class="panel" style="margin-top:1.13cqw">
+            <div class="ttl">Ruang Gunting</div>
+            <div class="chip">Ketat</div><div class="chip on">Sedang</div><div class="chip">Longgar</div>
+          </div>
+          <div class="panel" style="margin-top:1.13cqw">
+            <div class="ttl">Halaman</div>
+            <div class="btn line">Cetak Semua</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="foot-note">Preview hitam-putih di kanan = persis hasil cetak di kertas thermal.</p>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 6 · HASIL CETAK ═══ -->
+  <section class="slide dark">
+    <div class="num">06 · Hasil Cetak</div>
+    <div class="eyebrow">Hasil cetak</div>
+    <h2 style="margin:1.13cqw 0 2.5cqw">Tajam, rapih, tinggal gunting</h2>
+    <div class="grid c3 grow" style="align-content:center;justify-items:center">
+      <div>
+        <div class="paper-strip" style="width:16.9cqw">
+          <div class="top">XYZ STORE</div>
+          <div class="dash"></div>
+          <div class="kv"><b>Pengirim</b><span>Rina W.</span></div>
+          <div class="kv"><b>No.HP</b><span>0812-3456-7890</span></div>
+          <div class="dash"></div>
+          <div class="big">ANDI PRAKOSO</div>
+          <div class="kv"><b>Alamat</b><span>Jl. Kenanga 8, Surabaya</span></div>
+          <div class="kv"><b>No.HP</b><span>0813-2233-4455</span></div>
+          <div class="dash"></div>
+          <div class="tot"><span>TOTAL</span><span>Rp128.000</span></div>
+        </div>
+        <div class="cutline" style="margin-top:0"><span>✂ gunting</span></div>
+      </div>
+      <div>
+        <div class="paper-strip" style="width:16.9cqw">
+          <div class="top">TOKO KAMI</div>
+          <div class="dash"></div>
+          <div class="big mono" style="text-align:center">SiCepat · 0012 9988 7766</div>
+          <div class="dash"></div>
+          <table><tr><th>PRODUK</th><th class="r">QTY</th><th class="r">SUBTOTAL</th></tr>
+          <tr><td>Kaos Polos Hitam</td><td class="r">2</td><td class="r">Rp70.000</td></tr>
+          <tr><td>Celana Kargo</td><td class="r">1</td><td class="r">Rp45.000</td></tr></table>
+          <div class="dash"></div>
+          <div class="tot"><span>TOTAL</span><span>Rp130.000</span></div>
+        </div>
+        <div class="cutline" style="margin-top:0"><span>✂ gunting</span></div>
+      </div>
+      <div>
+        <div class="paper-strip" style="width:16.9cqw">
+          <div class="top">WARUNG SEHAT</div>
+          <div class="dash"></div>
+          <div class="kv"><b>Tujuan</b><span>Sari M.</span></div>
+          <div class="kv"><b>Alamat</b><span>Perum Griya Blok C7, Depok</span></div>
+          <div class="dash"></div>
+          <div class="big mono">TEE· 8899 1122 3344</div>
+          <div class="dash"></div>
+          <div class="foot">Terima kasih telah berbelanja</div>
+        </div>
+        <div class="cutline" style="margin-top:0"><span>✂ gunting</span></div>
+      </div>
+    </div>
+    <p class="lead" style="font-size:1.7cqw;margin-top:2cqw">Jarak bawah tiap resi diatur lewat menu <b>Ruang Gunting</b> — Ketat / Sedang / Longgar.</p>
+    <div class="brandmark">XYZ Thermal</div>
+  </section>
+
+  <!-- ═══ SLIDE 7 · KOMPATIBILITAS PRINTER ═══ -->
+  <section class="slide">
+    <div class="num">07 · Kompatibel</div>
+    <div class="eyebrow">Dukungan printer</div>
+    <h2 style="margin:1.13cqw 0">Printer merek apa pun bisa</h2>
+    <p class="lead" style="font-size:1.7cqw">Selama printer thermal-nya punya Bluetooth LE — aplikasi mendeteksi jalur data secara otomatis, bukan cuma merek tertentu.</p>
+    <div class="brands" style="margin-top:2.9cqw">
+      <span>Xprinter</span><span>Goojprt</span><span>Zjiang</span><span>HPRT</span>
+      <span>Rongta</span><span>Phomemo</span><span>Peripage</span><span>Sinmark</span>
+      <span>MTP-II</span><span>HM-A300</span><span>Eboss</span><span>Zicox</span>
+      <span>TSC</span><span>Cat Printer</span><span>+ merek generik</span>
+    </div>
+    <div class="grid c2" style="margin-top:2.9cqw">
+      <div class="card"><div class="ico">58</div><h3>Kertas 58mm</h3><p>Lebar cetak 384px — printer thermal kecil / 1 roll. Tersedia juga 40mm &amp; 58mm+ untuk unit tertentu.</p></div>
+      <div class="card"><div class="ico">80</div><h3>Kertas 80mm</h3><p>Lebar 576px (72mm, paling aman) atau 640px penuh, plus 64mm untuk printer tengah.</p></div>
+    </div>
+    <p class="foot-note">Butuh lebar lain? Tersedia 6 pilihan lebar kertas di aplikasi.</p>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 8 · PERBANDINGAN ═══ -->
+  <section class="slide dark">
+    <div class="num">08 · Perbandingan</div>
+    <div class="eyebrow">Bedanya</div>
+    <h2 style="margin:1.13cqw 0 2.7cqw">Kenapa bukan aplikasi lain?</h2>
+    <table class="compare grow" style="align-content:start">
+      <tr><th></th><th>XYZ Thermal</th><th>App printer biasa</th><th>Laptop + driver</th></tr>
+      <tr><td>Cetak dari HP saja</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">✕</td></tr>
+      <tr><td>Tanpa install APK</td><td class="ok">✓ (web)</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><td>Semua merek thermal</td><td class="ok">✓ auto</td><td class="no">Merek tertentu</td><td class="no">Driver per unit</td></tr>
+      <tr><td>Input resi manual</td><td class="ok">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><td>PDF banyak resi sekaligus</td><td class="ok">✓</td><td class="no">Terbatas</td><td class="ok">✓</td></tr>
+      <tr><td>Ruang gunting per resi</td><td class="ok">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><td>Bayar bulanan</td><td class="ok">Tidak — beli sekali</td><td class="no">Sering ada</td><td class="no">—</td></tr>
+    </table>
+    <div class="brandmark">XYZ Thermal</div>
+  </section>
+
+  <!-- ═══ SLIDE 9 · FAQ ═══ -->
+  <section class="slide">
+    <div class="num">09 · FAQ</div>
+    <div class="eyebrow">Sering ditanya</div>
+    <h2 style="margin:1.13cqw 0 2.5cqw">FAQ sebelum beli</h2>
+    <div class="grid c2">
+      <div class="card"><h3>🤔 Butuh printer khusus?</h3><p>Tidak. Printer thermal Bluetooth apa pun yang sudah Anda punya — cek dulu di daftar kompatibilitas.</p></div>
+      <div class="card"><h3>📱 Harus install?</h3><p>Tidak. Buka link di Chrome, langsung bisa. Bisa juga ditambahkan ke layar utama (PWA) biar seperti aplikasi.</p></div>
+      <div class="card"><h3>🔑 Dapat kode akses?</h3><p>Ya. Setelah pembayaran Anda terima 1 kode unik. Masukkan sekali, setelah itu terbuka terus di perangkat itu — beli sekali, pakai selamanya.</p></div>
+      <div class="card"><h3>🍎 iPhone bisa?</h3><p>Bisa pakai browser Bluefy (Chrome iOS belum mendukung Bluetooth cetak).</p></div>
+      <div class="card"><h3>⚡ Resi terpotong?</h3><p>Ganti pilihan lebar kertas (58 / 72 / 80mm). Panduan lengkap ada di menu "Cara Pakai" dalam aplikasi.</p></div>
+      <div class="card"><h3>🔒 Data aman?</h3><p>File resi tidak pernah diunggah ke server — semua diproses di perangkat Anda sendiri.</p></div>
+    </div>
+    <div class="brandmark">
+      <svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="#E1552F"/><rect x="6" y="13" width="20" height="9" rx="2" fill="#FBFAF7"/></svg>
+      XYZ Thermal
+    </div>
+  </section>
+
+  <!-- ═══ SLIDE 10 · CTA ═══ -->
+  <section class="slide accent">
+    <div class="num">10 · Penutup</div>
+    <div class="center-y" style="align-items:flex-start">
+      <svg viewBox="0 0 32 32" style="width:8.1cqw;height:8.1cqw;margin-bottom:2.5cqw">
+        <rect x="2" y="2" width="28" height="28" rx="7" fill="#fff"/>
+        <rect x="8" y="7" width="16" height="7" rx="1.5" fill="#E1552F"/>
+        <rect x="6" y="13" width="20" height="9" rx="2" fill="#E1552F"/>
+        <rect x="10" y="16" width="12" height="1.6" rx=".8" fill="#fff"/>
+        <rect x="10" y="19" width="8" height="1.6" rx=".8" fill="#ffb59f"/>
+        <circle cx="22" cy="15.5" r="1.2" fill="#fff"/>
+      </svg>
+      <h1 style="font-size:5.2cqw">Mulai cetak resi<br />15 detik per pesanan.</h1>
+      <p class="lead" style="margin-top:2cqw">Beli kode aksesnya di sini. Satu kode untuk satu penjual — aktif selamanya.</p>
+      <div style="display:flex;gap:1.35cqw;flex-wrap:wrap;margin-top:3.4cqw">
+        <span class="badge" style="background:#fff;color:var(--signal);border:0;font-weight:700">✓ Beli sekali, pakai selamanya</span>
+        <span class="badge" style="background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4)">Bantuan “Cara Pakai” di dalam aplikasi</span>
+      </div>
+      <p style="margin-top:4cqw;font-size:1.7cqw;letter-spacing:.02em">Chat penjual untuk mendapatkan kode akses Anda →</p>
+    </div>
+    <div class="brandmark" style="color:#fff">XYZ Thermal · Cetak Resi Bluetooth</div>
+  </section>
+
+</div>
+</body>
+</html>

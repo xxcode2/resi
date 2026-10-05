@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Daftar kode akses asli (privat, JANGAN sampai ter-commit/ke-deploy)
+licenses/

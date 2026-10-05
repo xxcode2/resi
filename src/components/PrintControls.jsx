@@ -1,0 +1,167 @@
+import { useState } from "react";
+import { Printer, Minus, Plus, CheckCircle2, Layers, Scissors } from "lucide-react";
+import Button from "./ui/Button";
+import { buildPrintJob } from "../utils/escpos";
+import { convertAllPdfPages } from "../utils/multiPageConvert";
+import { parsePageRange } from "../utils/pageRange";
+
+// Pilihan ruang kosong di bawah konten resi (dot) sebagai tempat menjepit gunting.
+const CUT_OPTIONS = [
+  { label: "Ketat", dots: 0 },
+  { label: "Sedang", dots: 60 },
+  { label: "Longgar", dots: 120 },
+];
+
+export default function PrintControls({ printer, bitmap, file, settings, disabled }) {
+  const [copies, setCopies] = useState(1);
+  const [cutSpace, setCutSpace] = useState(60); // default Sedang
+  const [justPrinted, setJustPrinted] = useState(false);
+  const [isPrintingAll, setIsPrintingAll] = useState(false);
+  const [allPagesProgress, setAllPagesProgress] = useState(null);
+
+  const isPdf = file?.type === "application/pdf";
+
+  // Hitung halaman yang dipilih dari pageRange.
+  // pageRange kosong berarti "semua halaman" (samakan dengan default di ReceiptPreview.jsx),
+  // bukan "tidak ada halaman terpilih" — sebelumnya ini yang bikin tombol "Cetak Semua
+  // Halaman" ke-disable di awal padahal thumbnail menampilkan semua halaman terpilih.
+  const totalPagesForRange = settings.pageCount || 1;
+  const selectedPages = isPdf
+    ? parsePageRange(settings.pageRange || `1-${totalPagesForRange}`, totalPagesForRange)
+    : [];
+  const totalPages = isPdf ? totalPagesForRange : 0;
+  const hasCustomRange = selectedPages.length > 0 && selectedPages.length < totalPages;
+
+  const handlePrint = async () => {
+    if (!bitmap) return;
+    setJustPrinted(false);
+    const job = buildPrintJob(bitmap, { feedAfter: 3, cut: true, copies, bottomPaddingDots: cutSpace });
+    await printer.print(job);
+    setJustPrinted(true);
+    setTimeout(() => setJustPrinted(false), 2500);
+  };
+
+  const handlePrintAllPages = async () => {
+    if (!file || !isPdf) return;
+    setIsPrintingAll(true);
+    setAllPagesProgress(null);
+    setJustPrinted(false);
+
+    try {
+      // Kalau ada range custom, hanya cetak halaman yang dipilih
+      const pagesToConvert = hasCustomRange ? selectedPages : undefined;
+      const { bitmaps } = await convertAllPdfPages(
+        file,
+        {
+          paperWidthDots: settings.paperWidthDots,
+          threshold: settings.threshold,
+          dither: settings.dither,
+        },
+        (current, total) => setAllPagesProgress({ current, total }),
+        pagesToConvert
+      );
+
+      // Kirim setiap halaman sebagai job terpisah, halaman terakhir yang di-cut
+      for (let i = 0; i < bitmaps.length; i++) {
+        const isLast = i === bitmaps.length - 1;
+        const job = buildPrintJob(bitmaps[i], {
+          feedAfter: 3,
+          cut: isLast,
+          copies,
+          bottomPaddingDots: cutSpace,
+        });
+        await printer.print(job);
+      }
+
+      setJustPrinted(true);
+      setTimeout(() => setJustPrinted(false), 2500);
+    } catch (err) {
+      console.error("Print all pages error:", err);
+    } finally {
+      setIsPrintingAll(false);
+      setAllPagesProgress(null);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-ink-900/10 bg-white p-5 shadow-card">
+      <h2 className="font-display text-base font-semibold text-ink-900">Cetak</h2>
+
+      <div className="mt-4 flex items-center justify-between">
+        <span className="text-xs font-medium text-ink-700">Jumlah rangkap</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setCopies((c) => Math.max(1, c - 1))}
+            className="rounded-md border border-ink-900/10 p-1.5 text-ink-700 hover:bg-paper-100"
+          >
+            <Minus size={14} />
+          </button>
+          <span className="w-4 text-center font-mono text-sm">{copies}</span>
+          <button
+            onClick={() => setCopies((c) => Math.min(9, c + 1))}
+            className="rounded-md border border-ink-900/10 p-1.5 text-ink-700 hover:bg-paper-100"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <div className="flex items-center gap-1.5">
+          <Scissors size={13} className="text-ink-500" />
+          <span className="text-xs font-medium text-ink-700">Ruang Gunting</span>
+        </div>
+        <div className="mt-1.5 grid grid-cols-3 gap-1.5">
+          {CUT_OPTIONS.map((opt) => (
+            <button
+              key={opt.dots}
+              onClick={() => setCutSpace(opt.dots)}
+              className={`rounded-lg border px-2 py-1.5 text-xs font-medium transition-colors ${
+                cutSpace === opt.dots
+                  ? "border-signal bg-signal/5 text-signal"
+                  : "border-ink-900/10 text-ink-700 hover:bg-paper-100"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Button
+        icon={justPrinted ? CheckCircle2 : Printer}
+        onClick={handlePrint}
+        loading={printer.isPrinting}
+        disabled={disabled || !bitmap}
+        className="mt-4 w-full"
+      >
+        {justPrinted ? "Terkirim ke Printer" : "Print"}
+      </Button>
+
+      {isPdf && (
+        <Button
+          icon={justPrinted ? CheckCircle2 : Layers}
+          variant="secondary"
+          onClick={handlePrintAllPages}
+          loading={isPrintingAll}
+          disabled={disabled || !file || selectedPages.length === 0}
+          className="mt-2 w-full"
+        >
+          {isPrintingAll && allPagesProgress
+            ? `Memproses ${allPagesProgress.current}/${allPagesProgress.total}…`
+            : justPrinted
+            ? "Halaman Terkirim"
+            : hasCustomRange
+            ? `Cetak ${selectedPages.length} Halaman`
+            : "Cetak Semua Halaman"}
+        </Button>
+      )}
+
+      {disabled && (
+        <p className="mt-2 text-center text-xs text-ink-500">
+          Hubungkan printer dan unggah resi terlebih dahulu.
+        </p>
+      )}
+    </div>
+  );
+}
