@@ -121,6 +121,7 @@ Struktur folder sudah disiapkan agar mudah ditambah:
 
 - **Kenapa harus dikonversi ke bitmap dulu?** Printer thermal murah tidak punya rendering engine PDF/font vektor. Satu-satunya bahasa yang mereka pahami untuk gambar adalah *raster bitmap* 1-bit lewat perintah ESC/POS `GS v 0`. Karena itu PDF/gambar apa pun harus "difoto" jadi bitmap hitam-putih dulu sebelum dikirim.
 - **Kenapa dikirim per-chunk?** GATT characteristic write punya batas ukuran payload (tergantung MTU koneksi, umumnya puluhan-ratusan byte). Mengirim seluruh gambar sekaligus akan gagal atau membuat data korup, karena itu `useBluetoothPrinter` memecahnya jadi potongan kecil dengan jeda antar pengiriman.
+- **Klik kanan dinonaktifkan.** Di seluruh aplikasi (termasuk layar kode akses) menu konteks browser disembunyikan, termasuk long-press di HP, supaya preview hasil cetak tidak tinggal "Simpan gambar". Kolom isian (nama, alamat, no. HP) tetap bisa klik kanan agar copy-paste jalan. Ini hanya pencegahan tampilan — bukan proteksi keamanan; pembuka tab terlatih tetap bisa lewat devtools.
 
 ## 8. Input Resi Manual (tanpa file)
 
